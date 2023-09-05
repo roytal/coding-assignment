@@ -1,0 +1,16 @@
+{
+  "name": "coding-assignment",
+  "version": "1.0.0",
+  "description": "Vi's Coding Assignment (Engineering Team)",
+  "main": "src/index.js",
+  "author": "Alon Kaduri <alonk@vi.co>",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^28.1.0"
+  },
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
+}
