@@ -7,3 +7,9 @@ node_modules/
 logs
 *.log
 npm-debug.log*
+
+.DS_Store
+
+src/api-response.json
+
+.env
