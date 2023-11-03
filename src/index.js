@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const apiRouter = require("./routes/api");
 const {systemLogger} = require("../utils/logger");
-const {fetchMoviesCasts} = require("./services/moviesService");
+const {fetchMoviesCasts} = require("../utils/movies");
 const app = express();
 
 app.use(express.json({limit: "100mb"}));

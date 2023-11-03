@@ -13,3 +13,5 @@ npm-debug.log*
 src/api-response.json
 
 .env
+
+local/

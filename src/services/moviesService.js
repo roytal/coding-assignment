@@ -1,101 +1,99 @@
 const _ = require("lodash");
-const fs = require('fs');
-const {systemLogger, apiLogger} = require("../../utils/logger");
-const {axiosInstance} = require("../../config/axiosInstance");
-const {movies, actors} = require("../../dataForQuestions");
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const {apiLogger} = require("../../utils/logger");
+const {getMoviesDataFromLocal, trimCharacterName, isMoreThanOneCharacter} = require("../../utils/movies");
 
-
-const getMovieCastBatch = async (batch) => {
-    try {
-        const batchPromises = await Promise.all(
-            batch.map(async (movieId) => {
-                try {
-                    const {data} = await axiosInstance.get(`/movie/${movieId}/credits`);
-                    const cast = _.map(data.cast, actor => ({
-                        id: actor.id,
-                        name: actor.name,
-                        character: actor.character
-                    }));
-                    return {movieId, cast};
-                } catch (error) {
-                    systemLogger.error(`Error fetching movie casts for movie ID ${movieId}:`, error.message);
-                    return null;
-                }
-            })
-        );
-        // remove all failed requests from the cast fetching
-        return _.compact(batchPromises);
-    } catch (error) {
-        console.error('Error fetching movie casts:', error.message);
-        return [];
-    }
-};
-
-const fetchMoviesCasts = async () => {
-    try {
-        const movieIds = _.values(movies);
-        const batchSize = 5;
-        const results = [];
-
-        // split api calls into batches and sleep after each batch to avoid rate limits
-        const batches = _.chunk(movieIds, batchSize);
-        for (const batch of batches) {
-            const batchResult = await getMovieCastBatch(batch);
-            results.push(batchResult);
-            await sleep(500);
-        }
-        systemLogger.info('finished fetching casts, about to save results');
-
-        // write the result to a static file
-        const flattenedResults = _.flatten(results);
-        const jsonData = JSON.stringify(flattenedResults);
-        fs.writeFileSync('api-response.json', JSON.stringify(jsonData));
-        systemLogger.info('saved all results successfully');
-
-    } catch (error) {
-        systemLogger.error('error fetching movie casts:', error.message);
-    }
-};
 
 const moviesPerActor = async (req, res) => {
     try {
-        apiLogger.info(`successfully fetched movies ...`);
-        return res.status(200).json({msg: 'bla bla'});
+        let movies = getMoviesDataFromLocal()
+
+        const moviesPerActor = {};
+        movies.forEach((movie) => {
+            movie.cast.forEach((actor) => {
+                if (!moviesPerActor[actor.name]) {
+                    moviesPerActor[actor.name] = [];
+                }
+                moviesPerActor[actor.name].push(movie.movieName);
+            });
+        });
+        apiLogger.debug(`successfully ran moviesPerActor`, {req});
+
+        return res.status(200).json(moviesPerActor);
     } catch (error) {
-        apiLogger.error(
-            `Failed to fetch movies, Error: ...`
-        );
-        return res.status(500).json({msg: 'bla bla'});
+        apiLogger.error(`got error running moviesPerActor`, {error});
+        return res.status(500).json({msg: 'could not retrieve movies per actor'});
     }
 };
+
 
 const actorsWithMultipleCharacters = async (req, res) => {
     try {
-        apiLogger.info(`successfully fetched movies ...`);
-        return res.status(200).json({msg: 'bla bla'});
+        let movies = getMoviesDataFromLocal()
+
+        // setup dict of all actor to their {movieName, characterName}
+        const moviesPerActor = {};
+        movies.forEach((movie) => {
+            movie.cast.forEach((actor) => {
+                if (!moviesPerActor[actor.name]) {
+                    moviesPerActor[actor.name] = [];
+                }
+                moviesPerActor[actor.name].push({movieName: movie.movieName, characterName: actor.character});
+            });
+        });
+
+        // find all actors with more than 1 character
+        const actorWithMultipleCharacters = {};
+        _.map(moviesPerActor, (roles, actorName) => {
+            if (isMoreThanOneCharacter(_.map(roles, 'characterName'))) {
+                actorWithMultipleCharacters[actorName] = roles
+            }
+
+        })
+        apiLogger.debug(`successfully ran actorsWithMultipleCharacters`, {req});
+
+        return res.status(200).json(actorWithMultipleCharacters);
     } catch (error) {
-        apiLogger.error(
-            `Failed to fetch movies, Error: ...`
-        );
-        return res.status(500).json({msg: 'bla bla'});
+        apiLogger.error(`got error running actorsWithMultipleCharacters`, {error});
+        return res.status(500).json({msg: 'could not retrieve actors with multiple characters'});
     }
 };
 
+// { characterName: [{movieName, actorName}] }
 const charactersWithMultipleActors = async (req, res) => {
     try {
-        apiLogger.info(`successfully fetched movies ...`);
-        return res.status(200).json({msg: 'bla bla'});
+        let movies = getMoviesDataFromLocal()
+
+        // setup dict of all Character to their {movieName, actorName}
+        const moviesPerActor = {};
+        movies.forEach((movie) => {
+            movie.cast.forEach((actor) => {
+                let fixedCharacterName = trimCharacterName(actor.character)
+                if (!moviesPerActor[fixedCharacterName]) {
+                    moviesPerActor[fixedCharacterName] = [];
+                }
+                moviesPerActor[fixedCharacterName].push({movieName: movie.movieName, actorName: actor.name});
+            });
+        });
+
+        // find all characters with more than 1 actor
+        const actorWithMultipleCharacters = {};
+        _.map(moviesPerActor, (roles, characterName) => {
+            let uniqueRoles = _.uniqBy(roles, 'actorName');
+            if (uniqueRoles.length > 1) {
+                actorWithMultipleCharacters[characterName] = roles
+            }
+
+        })
+        apiLogger.debug(`successfully ran actorsWithMultipleCharacters`, {req});
+
+        return res.status(200).json(actorWithMultipleCharacters);
     } catch (error) {
-        apiLogger.error(
-            `Failed to fetch movies, Error: ...`
-        );
-        return res.status(500).json({msg: 'bla bla'});
+        apiLogger.error(`got error running actorsWithMultipleCharacters`, {error});
+        return res.status(500).json({msg: 'could not retrieve actors with multiple characters'});
     }
 };
 
 module.exports = {
-    fetchMoviesCasts,
     moviesPerActor,
     actorsWithMultipleCharacters,
     charactersWithMultipleActors,
