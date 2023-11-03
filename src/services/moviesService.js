@@ -65,11 +65,13 @@ const charactersWithMultipleActors = async (req, res) => {
 
         // setup dict of all Character to their {movieName, actorName}
         const moviesPerActor = {};
+        const fixedCharacterToFullName = {};
         movies.forEach((movie) => {
             movie.cast.forEach((actor) => {
                 let fixedCharacterName = trimCharacterName(actor.character)
                 if (!moviesPerActor[fixedCharacterName]) {
                     moviesPerActor[fixedCharacterName] = [];
+                    fixedCharacterToFullName[fixedCharacterName] = actor.character
                 }
                 moviesPerActor[fixedCharacterName].push({movieName: movie.movieName, actorName: actor.name});
             });
@@ -77,10 +79,10 @@ const charactersWithMultipleActors = async (req, res) => {
 
         // find all characters with more than 1 actor
         const actorWithMultipleCharacters = {};
-        _.map(moviesPerActor, (roles, characterName) => {
+        _.map(moviesPerActor, (roles, fixedCharacterName) => {
             let uniqueRoles = _.uniqBy(roles, 'actorName');
             if (uniqueRoles.length > 1) {
-                actorWithMultipleCharacters[characterName] = roles
+                actorWithMultipleCharacters[fixedCharacterToFullName[fixedCharacterName]] = roles
             }
 
         })
