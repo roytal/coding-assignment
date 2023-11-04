@@ -10,6 +10,8 @@ npm-debug.log*
 
 .DS_Store
 
-src/api-response.json
+api-response.json
 
 local/
+
+.env

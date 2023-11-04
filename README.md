@@ -68,8 +68,14 @@ Swagger API documentation can be found [here](http://localhost:3000/api-docs).
 
 Start the server:
 
+``API_KEY`` Your 'THE MOVIES DB' API key (Mandatory)
+
+``PORT``  The port number on which the server will run. (Optional, default is 3000)
+
+``MOVIES_DB_API`` The base URL for 'The Movies DB' API. (Optional, default is https://api.themoviedb.org/3)
+
 ```shell
-yarn start
+PORT={PORT_NUMBER} API_KEY={API_KEY} MOVIES_DB_API={MOVIES_DB_API_BASE} yarn start
 ```
 
 ## How to use
