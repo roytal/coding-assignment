@@ -1,8 +1,8 @@
 const _ = require("lodash");
 const fs = require('fs');
 const {systemLogger} = require("./logger");
-const {axiosInstance} = require("../config/axiosInstance");
-const {movies, actors} = require("../dataForQuestions");
+const {axiosInstance} = require("../../config/axiosInstance");
+const {movies, actors} = require("../../dataForQuestions");
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 
@@ -19,7 +19,7 @@ const getMovieCastBatch = async (batch) => {
                     })), actor => _.includes(actors, actor.name));
                     return {movieId, cast};
                 } catch (error) {
-                    systemLogger.error(`Error fetching movie casts for movie ID ${movieId}:`, error.message);
+                    systemLogger.error(`Error fetching movie casts for movie ID ${movieId}: ${error.message}`);
                     return null;
                 }
             })
@@ -51,6 +51,9 @@ const fetchMoviesCasts = async () => {
 
         // write the result to a static file
         const flattenedResults = _.flatten(results);
+        if (flattenedResults.length === 0) {
+            throw new Error("could not retrieve movie api")
+        }
         let resultsWithMovieNames = _.map(flattenedResults, (result) => {
             result["movieName"] = movieIdToName[result.movieId]
             return result
@@ -61,7 +64,9 @@ const fetchMoviesCasts = async () => {
         systemLogger.info('saved all results successfully');
 
     } catch (error) {
-        systemLogger.error('error fetching movie casts:', error.message);
+        console.log('error fetching movie casts:', error.message);
+        systemLogger.error(`Error fetching movie casts: ${error}`);
+        process.exit(1);
     }
 };
 
@@ -147,5 +152,7 @@ module.exports = {
     fetchMoviesCasts,
     getMoviesDataFromLocal,
     trimCharacterName,
-    isMoreThanOneCharacter
+    isMoreThanOneCharacter,
+    isAllListsContainedInOne,
+    isAllStringsContainedInOne
 }

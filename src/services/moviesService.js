@@ -1,6 +1,6 @@
 const _ = require("lodash");
-const {apiLogger} = require("../../utils/logger");
-const {getMoviesDataFromLocal, trimCharacterName, isMoreThanOneCharacter} = require("../../utils/movies");
+const {apiLogger} = require("../utils/logger");
+const {getMoviesDataFromLocal, trimCharacterName, isMoreThanOneCharacter} = require("../utils/movies");
 
 
 const moviesPerActor = async (req, res) => {

@@ -1,10 +1,10 @@
-require('dotenv').config({path: '../.env'});
+require('dotenv').config();
 const express = require("express");
 const swaggerUI = require("swagger-ui-express");
 const cors = require("cors");
 const apiRouter = require("./routes/api");
-const {systemLogger} = require("../utils/logger");
-const {fetchMoviesCasts} = require("../utils/movies");
+const {systemLogger} = require("./utils/logger");
+const {fetchMoviesCasts} = require("./utils/movies");
 const {docs} = require('../docs/openapi')
 const app = express();
 
@@ -26,7 +26,7 @@ app.use(express.urlencoded({extended: true}));
 
 // routes
 app.use("/", apiRouter);
-app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(docs));
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(docs));
 
 // fetch all data to local storage and start the server
 const startServer = async () => {

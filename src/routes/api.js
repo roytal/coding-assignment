@@ -8,7 +8,7 @@ const {
 } = require("../services/moviesService");
 
 // protected routes
-router.get("/moviesPerActor",  moviesPerActor);
+router.get("/moviesPerActor", moviesPerActor);
 router.get("/actorsWithMultipleCharacters", actorsWithMultipleCharacters);
 router.get("/charactersWithMultipleActors", charactersWithMultipleActors);
 
