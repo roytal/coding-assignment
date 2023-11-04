@@ -3,6 +3,12 @@ const {apiLogger} = require("../utils/logger");
 const {getMoviesDataFromLocal, trimCharacterName, isMoreThanOneCharacter} = require("../utils/movies");
 
 
+/**
+ * Retrieves a dictionary of actors and the movies they have played in.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - Dictionary of actors and movies
+ */
 const moviesPerActor = async (req, res) => {
     try {
         let movies = getMoviesDataFromLocal()
@@ -25,7 +31,12 @@ const moviesPerActor = async (req, res) => {
     }
 };
 
-
+/**
+ * Retrieves a dictionary of actors and their characters in movies, filtered for those with multiple characters.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - Dictionary of actors and characters in movies
+ */
 const actorsWithMultipleCharacters = async (req, res) => {
     try {
         let movies = getMoviesDataFromLocal()
@@ -58,7 +69,12 @@ const actorsWithMultipleCharacters = async (req, res) => {
     }
 };
 
-// { characterName: [{movieName, actorName}] }
+/**
+ * Retrieves a dictionary of characters and the actors who have played their role, filtered for characters with multiple actors.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - Dictionary of characters and actors in movies
+ */
 const charactersWithMultipleActors = async (req, res) => {
     try {
         let movies = getMoviesDataFromLocal()

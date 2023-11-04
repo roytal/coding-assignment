@@ -38,6 +38,7 @@ const startServer = async () => {
         const port = process.env.PORT || 3000;
         app.listen(port, () => {
             console.log(`Server running on port ${port}`);
+            console.log(`API documentation can be found on /api-docs`);
             systemLogger.info(`Server started, port: ${port}`);
         });
     } catch (error) {

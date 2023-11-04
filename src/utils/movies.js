@@ -6,6 +6,11 @@ const {movies, actors} = require("../../dataForQuestions");
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 
+/**
+ * Fetches the movie casts for a batch of movie IDs using Axios.
+ * @param {Array} batch - An array of movie IDs.
+ * @returns {Promise<Array>} - A promise that resolves to an array of objects containing movie IDs and casts.
+ */
 const getMovieCastBatch = async (batch) => {
     try {
         const batchPromises = await Promise.all(
@@ -32,6 +37,11 @@ const getMovieCastBatch = async (batch) => {
     }
 };
 
+/**
+ * Fetches casts for a list of movies, splits the API calls into batches, and saves the results to a JSON file.
+ * @returns {Promise<void>} - A promise that resolves when the fetch and save process is complete.
+ * @throws {Error} - If there is an error during the fetch or the result is empty.
+ */
 const fetchMoviesCasts = async () => {
     try {
         const movieIds = _.values(movies);
@@ -70,18 +80,32 @@ const fetchMoviesCasts = async () => {
     }
 };
 
+/**
+ * Reads and parses movie data from a local JSON file.
+ * @returns {Object} - Parsed movie data.
+ */
 const getMoviesDataFromLocal = () => {
     const jsonData = fs.readFileSync('api-response.json', 'utf8');
     const data = JSON.parse(jsonData);
     return !_.isEmpty(data) ? data : {}
 };
 
+/**
+ * Trims character names by removing unnecessary information.
+ * @param {string} fullName - The full name of a character.
+ * @returns {string} - The trimmed character name.
+ */
 const trimCharacterName = (fullName) => {
     let trimmedCharName = _.split(fullName, "/")[0]
     trimmedCharName = _.replace(trimmedCharName, /\([^)]*\)/g, '');
     return _.trim(trimmedCharName)
 }
 
+/**
+ * Checks if there are more than one character for a given set of characters.
+ * @param {Array} characters - An array of character names.
+ * @returns {boolean} - True if there are more than one character, false otherwise.
+ */
 const isMoreThanOneCharacter = (characters) => {
     // remove brackets and spaces, and than remove duplications
     let charactersUnique = _.map(characters, item => _.replace(item, /\([^)]*\)/g, ''))
@@ -98,21 +122,11 @@ const isMoreThanOneCharacter = (characters) => {
     return !isAllListsContained && !isAllStringsContained
 }
 
-// check if there is a list that contain the value of all other lists.
-// input [["a", "b", "c"], ["a", "b"], ["b", "c"]] return true
-// input [["a", "b", "c"], ["a", "b"], ["b", "z"]] return false
-// example should return true
-// [
-//   [
-//     "Natalie Rushman",
-//     "Natasha Romanoff",
-//     "Black Widow"
-//   ],
-//   [
-//     "Natasha Romanoff",
-//     "Black Widow"
-//   ]
-// ]
+/**
+ * Checks if there is a list that contains the values of all other lists.
+ * @param {Array} arrayOfArrays - An array of arrays.
+ * @returns {boolean} - True if one list contains the values of all other lists, false otherwise.
+ */
 const isAllListsContainedInOne = (arrayOfArrays) => {
     // If there's only one or zero arrays, they are all contained
     if (arrayOfArrays.length < 2) {
@@ -127,14 +141,11 @@ const isAllListsContainedInOne = (arrayOfArrays) => {
 };
 
 
-// check if there is a list that contain the value of all other lists.
-// input ["ab", "b", "a"] return true
-// input ["ab", "b", "c"] return false
-// example should return true
-// [
-//   "Virginia 'Pepper' Potts",
-//   "Pepper Potts"
-// ]
+/**
+ * Checks if there is a string that contains the characters of all other strings.
+ * @param {Array} arr - An array of strings.
+ * @returns {boolean} - True if one string contains the characters of all other strings, false otherwise.
+ */
 const isAllStringsContainedInOne = (arr) => {
     // If the array is empty, return false
     if (_.isEmpty(arr)) {
