@@ -9,7 +9,7 @@ const {getMoviesDataFromLocal, trimCharacterName, isMoreThanOneCharacter} = requ
  * @param {Object} res - Express response object
  * @returns {Object} - Dictionary of actors and movies
  */
-const moviesPerActor = async (req, res) => {
+const moviesPerActor = (req, res) => {
     try {
         let movies = getMoviesDataFromLocal()
 
@@ -37,7 +37,7 @@ const moviesPerActor = async (req, res) => {
  * @param {Object} res - Express response object
  * @returns {Object} - Dictionary of actors and characters in movies
  */
-const actorsWithMultipleCharacters = async (req, res) => {
+const actorsWithMultipleCharacters = (req, res) => {
     try {
         let movies = getMoviesDataFromLocal()
 
@@ -75,7 +75,7 @@ const actorsWithMultipleCharacters = async (req, res) => {
  * @param {Object} res - Express response object
  * @returns {Object} - Dictionary of characters and actors in movies
  */
-const charactersWithMultipleActors = async (req, res) => {
+const charactersWithMultipleActors = (req, res) => {
     try {
         let movies = getMoviesDataFromLocal()
 
